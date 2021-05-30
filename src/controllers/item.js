@@ -1,28 +1,53 @@
 const itemModel = require('../models/item')
 const timeHelper = require('../helpers/time')
 
-exports.getItem = (req, res) => {
+exports.getItemBySearch = (req, res) => {
   const cond = req.query.search
   if (cond) {
     itemModel.getItemByCondition(cond, (err, results, _fields) => {
-      if (err) throw err
+      if (!err) {
+        if (results.length > 0) {
+          return res.status(200).json({
+            success: true,
+            message: 'list of product',
+            results
+          })
+        } else {
+          return res.status(400).json({
+            success: false,
+            message: 'item not found'
+          })
+        }
+      } else {
+        return res.status(500).json({
+          success: false,
+          message: 'An error occurred'
+        })
+      }
+    })
+  } else {
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred'
+    })
+  }
+}
+
+exports.getItem = (req, res) => {
+  itemModel.getItem((err, results, _fields) => {
+    if (!err) {
       return res.status(200).json({
         success: true,
         message: 'list of product',
         results
       })
-    })
-  } else {
-    itemModel.getItem((err, results, _fields) => {
-      if (!err) {
-        return res.status(200).json({
-          success: true,
-          message: 'list of product',
-          results
-        })
-      }
-    })
-  }
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: 'An error occurred'
+      })
+    }
+  })
 }
 
 exports.createItem = (req, res) => {
@@ -96,11 +121,21 @@ exports.updateItem = (req, res) => {
           } else {
             return res.status(500).json({
               success: false,
-              message: 'An error ocurred'
+              message: 'An error occurred'
             })
           }
         })
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'item not found'
+        })
       }
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: 'An error occurred'
+      })
     }
   })
 }
@@ -151,15 +186,20 @@ exports.getDetailItem = (req, res) => {
           message: 'item not found'
         })
       }
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: 'An Error Occurred'
+      })
     }
   })
 }
 
-exports.orderItem = (req, res) => {
-  const cond1 = req.query.orderBy
-  const cond2 = req.query.orderType
-  itemModel.orderItem(cond1, cond2, (err, results, _fields) => {
-    if (cond1 + cond2) {
+exports.sortingItem = (req, res) => {
+  const cond1 = req.query.sortingBy
+  const cond2 = req.query.sortingType
+  itemModel.sortingItem(cond1, cond2, (err, results, _fields) => {
+    if (cond1 && cond2) {
       if (!err) {
         return res.status(200).json({
           success: true,
@@ -169,13 +209,13 @@ exports.orderItem = (req, res) => {
       } else {
         return res.status(400).json({
           success: false,
-          message: 'System Need 2 Key For Order'
+          message: 'Column name not found'
         })
       }
     } else {
       return res.status(400).json({
         success: false,
-        message: 'System Need 2 Key For Order'
+        message: 'System Need 2 Key For sorting'
       })
     }
   })

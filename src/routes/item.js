@@ -1,7 +1,8 @@
 const route = require('express').Router()
 
 const itemController = require('../controllers/item')
-route.get('/order', itemController.orderItem)
+route.get('/sorting', itemController.sortingItem)
+route.get('/search', itemController.getItemBySearch)
 route.post('/', itemController.createItem)
 route.get('/', itemController.getItem)
 route.get('/:id', itemController.getDetailItem)

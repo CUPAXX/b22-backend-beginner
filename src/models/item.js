@@ -45,7 +45,7 @@ exports.getItemByCondition = (cond, cb) => {
 //   `, cb)
 // }
 
-exports.orderItem = (cond1, cond2, cb) => {
+exports.sortingItem = (cond1, cond2, cb) => {
   db.query(`SELECT * FROM item ORDER BY item.${cond1} ${cond2}
   `, cb)
 }
