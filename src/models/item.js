@@ -1,8 +1,8 @@
 const db = require('../helpers/db')
 
 exports.createItem = (data, cb) => {
-  db.query(`INSERT INTO item (productName, category_product, price, variants_product, deliveryCondition, stock ) 
-  VALUES ('${data.name}',${data.category}, ${data.price}, ${data.variants}, '${data.delivcondition}', ${data.stock})
+  db.query(`INSERT INTO item (productName, price) 
+  VALUES ('${data.name}', ${data.price})
   `, cb)
 }
 
