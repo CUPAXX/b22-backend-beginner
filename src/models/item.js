@@ -40,12 +40,14 @@ exports.getItemByCondition = (cond, cb) => {
   `, cb)
 }
 
-// exports.orderItem = (cb) => {
-//   db.query(`SELECT * FROM item ORDER BY item.productName ASC
+// exports.sortingItem = (cond1, cond2, cb) => {
+//   db.query(`SELECT * FROM item ORDER BY item.${cond1} ${cond2}
 //   `, cb)
 // }
 
 exports.sortingItem = (cond1, cond2, cb) => {
-  db.query(`SELECT * FROM item ORDER BY item.${cond1} ${cond2}
+  db.query(`SELECT item.productName, category.categoryName as category_product, item.price, variants.variantsName as variants_product, item.deliveryCondition, item.stock, item.createAt, item.updatedAt 
+  FROM item LEFT JOIN category ON item.category_product = category.id
+  LEFT JOIN variants ON item.variants_product = variants.id ORDER BY item.${cond1} ${cond2}
   `, cb)
 }
