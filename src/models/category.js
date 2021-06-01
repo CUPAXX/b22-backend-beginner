@@ -12,8 +12,13 @@ exports.createCategory = (data, cb) => {
 }
 
 exports.getCategoryById = (id, cb) => {
-  db.query(`SELECT * FROM category WHERE id=${id}`
+  db.query(`SELECT * FROMs category WHERE id=${id}`
     , cb)
+}
+
+exports.getCategoryByCondition = (cond, cb) => {
+  db.query(`SELECT category.categoryName, category.createAt FROM category WHERE category.categoryName LIKE '%${cond}%'
+  `, cb)
 }
 
 exports.updateCategory = (data, cb) => {

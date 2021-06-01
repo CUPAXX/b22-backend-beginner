@@ -1,6 +1,38 @@
 const categoryModel = require('../models/category')
 const timeHelper = require('../helpers/time')
 
+exports.getCategoryBySearch = (req, res) => {
+  const cond = req.query.search
+  if (cond) {
+    categoryModel.getCategoryByCondition(cond, (err, results, _fields) => {
+      if (!err) {
+        if (results.length > 0) {
+          return res.status(200).json({
+            success: true,
+            message: 'list of category',
+            results
+          })
+        } else {
+          return res.status(400).json({
+            success: false,
+            message: 'category not found'
+          })
+        }
+      } else {
+        return res.status(500).json({
+          success: false,
+          message: 'An error occurred'
+        })
+      }
+    })
+  } else {
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred'
+    })
+  }
+}
+
 exports.getCategory = (req, res) => {
   categoryModel.getCategory((err, results, _fields) => {
     if (!err) {

@@ -16,6 +16,11 @@ exports.getVariantsById = (id, cb) => {
     , cb)
 }
 
+exports.getVariantsByCondition = (cond, cb) => {
+  db.query(`SELECT variants.variantsName, variants.createAt FROM variants WHERE variants.variantsName LIKE '%${cond}%'
+  `, cb)
+}
+
 exports.updateVariants = (data, cb) => {
   db.query(`UPDATE variants SET variantsName='${data.name}', 
   updatedAt='${data.updatedAt}' WHERE id=${data.id}`
@@ -24,4 +29,10 @@ exports.updateVariants = (data, cb) => {
 
 exports.deleteVariants = (id, cb) => {
   db.query('DELETE FROM variants WHERE id=?', [id], cb)
+}
+
+exports.sortingVariants = (cond1, cond2, cb) => {
+  db.query(`SELECT variants.variantsName, variants.createAt 
+  FROM variants ORDER BY variants.${cond1} ${cond2}
+  `, cb)
 }

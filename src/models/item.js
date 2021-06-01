@@ -34,7 +34,7 @@ exports.deleteItem = (id, cb) => {
 }
 
 exports.getItemByCondition = (cond, cb) => {
-  db.query(`SELECT item.productName, category.categoryName as category_product, item.price, variants.variantsName as variants_product, item.deliveryCondition, item.stock, item.createAt, item.updatedAt 
+  db.query(`SELECT item.productName, category.categoryName as category_product, item.price, variants.variantsName as variants_product, item.deliveryCondition, item.description, item.stock, item.createAt, item.updatedAt 
   FROM item LEFT JOIN category ON item.category_product = category.id
   LEFT JOIN variants ON item.variants_product = variants.id WHERE item.ProductName LIKE '%${cond}%'
   `, cb)

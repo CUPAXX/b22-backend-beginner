@@ -101,6 +101,11 @@ exports.updateItemPartially = (req, res) => {
           message: 'Item Not Found'
         })
       }
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: 'An error ocurred'
+      })
     }
   })
 }
@@ -151,6 +156,11 @@ exports.deleteItem = (req, res) => {
             return res.status(200).json({
               success: true,
               message: 'item has been deleted!'
+            })
+          } else {
+            return res.status(500).json({
+              success: false,
+              message: 'An error Ocurred'
             })
           }
         })
