@@ -12,7 +12,7 @@ exports.createCategory = (data, cb) => {
 }
 
 exports.getCategoryById = (id, cb) => {
-  db.query(`SELECT * FROMs category WHERE id=${id}`
+  db.query(`SELECT * FROM category WHERE id=${id}`
     , cb)
 }
 
