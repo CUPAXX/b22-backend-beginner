@@ -4,23 +4,23 @@ const table = 'user'
 
 exports.createUser = (data, cb) => {
   db.query(`
-  INSERT INTO ${table} (name, email, password) VALUES (?, ?, ?)
-  `, [data.name, data.email, data.password], cb)
+  INSERT INTO ${table} (phoneNumber, email, password) VALUES (?, ?, ?)
+  `, [data.phoneNumber, data.email, data.password], cb)
 }
 
 exports.getUserByEmail = (email, cb) => {
   db.query(`
-  SELECT id, email, password FROM ${table} WHERE email=?
+  SELECT id, userName, firstName, lastName, email, password FROM ${table} WHERE email=?
   `, [email], cb)
 }
 
 exports.getUser = (cb) => {
-  db.query('SELECT id, email, createAt, updatedAt FROM user', cb)
+  db.query('SELECT id, picture, userName, firstName, lastName, email, createAt, updatedAt FROM user', cb)
 }
 
 exports.getUserById = (id, cb) => {
   db.query(`
-  SELECT id, picture, name, email, address FROM user WHERE id=?
+  SELECT id, picture, userName, firstName, lastName, email, address, phoneNumber FROM user WHERE id=?
   `, [id], cb)
 }
 
@@ -32,14 +32,14 @@ exports.getUserById = (id, cb) => {
 
 exports.updateUser = (data, cb) => {
   db.query(`
-  UPDATE user SET name=?, email=?, password=?, address=? WHERE id=?
-  `, [data.name, data.email, data.password, data.address, data.id], cb)
+  UPDATE user SET userName=?, firstName=?, lastName=?, email=?,  phoneNumber=?, address=? WHERE id=?
+  `, [data.userName, data.firstName, data.lastName, data.email, data.phoneNumber, data.address, data.id], cb)
 }
 
 exports.updateUser2 = (data, cb) => {
   db.query(`
-  UPDATE user SET name=?, email=?, address=? WHERE id=?
-  `, [data.name, data.email, data.address, data.id], cb)
+  UPDATE user SET userName=?, firstName=?, lastName=?, email=?, phoneNumber=?, address=?, picture=? WHERE id=?
+  `, [data.userName, data.firstName, data.lastName, data.email, data.phoneNumber, data.address, data.picture, data.id], cb)
 }
 
 exports.getUserRole = (id, cb) => {

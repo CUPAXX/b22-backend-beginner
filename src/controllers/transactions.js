@@ -11,6 +11,7 @@ exports.createTransaction = (req, res) => {
   if (typeof data.item_id === 'string') {
     data.item_id = [data.item_id]
     data.item_amount = [data.item_amount]
+    // data.variants_id = [data.variants_id]
   }
   getItembyId(data.item_id.map(id => parseInt(id)), (err, items) => {
     if (!err) {
@@ -35,6 +36,7 @@ exports.createTransaction = (req, res) => {
                   name: item.productName,
                   price: item.price,
                   amount: data.item_amount[idx],
+                  // variants: data.variants_id[idx],
                   id_item: item.id,
                   id_transaction: results.insertId
                 }
@@ -72,37 +74,42 @@ exports.getTransaction = (req, res) => {
 }
 
 exports.getDetailTransaction = (req, res) => {
-  getDetailTransaction(req.authUser.id, (err, results) => {
-    if (!err) {
-      if (results.length > 0) {
-        const data = {
-          code: '',
-          product: [],
-          total: '',
-          tax: '',
-          shipping_cost: '',
-          shipping_address: '',
-          payment_method: '',
-          ...results[0]
-        }
-        const hiddenColumn = ['product_name', 'price', 'amount']
-        hiddenColumn.forEach(column => {
-          delete data[column]
-        })
-        results.forEach(transaction => {
-          data.product.push({
-            product_name: transaction.product_name,
-            price: transaction.price,
-            amount: transaction.amount
+  const { id } = req.params
+  const { id: user } = req.authUser
+  getTransaction(user, (err, results) => {
+    if (err) throw err
+    getDetailTransaction(id, (err, results) => {
+      if (!err) {
+        if (results.length > 0) {
+          const data = {
+            code: '',
+            product: [],
+            total: '',
+            tax: '',
+            shipping_cost: '',
+            shipping_address: '',
+            payment_method: '',
+            ...results[0]
+          }
+          const hiddenColumn = ['product_name', 'price', 'amount']
+          hiddenColumn.forEach(column => {
+            delete data[column]
           })
-        })
+          results.forEach(transaction => {
+            data.product.push({
+              product_name: transaction.product_name,
+              price: transaction.price,
+              amount: transaction.amount
+            })
+          })
 
-        return response(res, 200, true, 'Detail Transaction', data)
+          return response(res, 200, true, 'Detail Transaction', data)
+        } else {
+          return response(res, 400, false, 'transaction Not Found')
+        }
       } else {
-        return response(res, 400, false, 'transaction Not Found')
+        return response(res, 500, false, 'An Error Occurred')
       }
-    } else {
-      return response(res, 500, false, 'An Error Occurred')
-    }
+    })
   })
 }

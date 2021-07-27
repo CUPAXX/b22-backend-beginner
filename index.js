@@ -2,13 +2,14 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const auth = require('./src/middlewares/auth')
+require('dotenv').config()
 
 const app = express()
 const { APP_UPLOAD_ROUTE, APP_UPLOAD_PATH } = process.env
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cors())
-app.use(__dirname + APP_UPLOAD_ROUTE, express.static(__dirname + APP_UPLOAD_PATH))
+app.use(APP_UPLOAD_ROUTE, express.static(APP_UPLOAD_PATH))
 
 app.get('/', (req, res) => {
   const data = {

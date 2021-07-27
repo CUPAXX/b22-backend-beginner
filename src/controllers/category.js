@@ -2,6 +2,7 @@ const categoryModel = require('../models/category')
 const timeHelper = require('../helpers/time')
 const { response: standardRes, response } = require('../helpers/standardRes')
 const { getUserRole } = require('../models/user')
+const { APP_URL } = process.env
 
 // exports.getCategoryBySearch = (req, res) => {
 //   const cond = req.query.search
@@ -114,6 +115,9 @@ exports.getCategoryItem = (req, res) => {
   categoryModel.getCategoryItem(id, (err, results, _fields) => {
     if (!err) {
       if (results.length > 0) {
+        results.forEach((pic, index) => {
+          results[index].picture = `${APP_URL}${results[index].picture}`
+        })
         return standardRes(res, 200, true, 'Detail category Item', results)
       } else {
         return standardRes(res, 400, false, 'category Not Found')

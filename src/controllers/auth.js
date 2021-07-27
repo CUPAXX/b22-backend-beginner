@@ -6,7 +6,6 @@ const { validationResult } = require('express-validator')
 
 exports.register = async (req, res) => {
   const result = validationResult(req)
-  console.log(result)
   if (!result.isEmpty()) {
     return response(res, 400, false, result.errors[0].msg)
   }
@@ -15,7 +14,7 @@ exports.register = async (req, res) => {
   createUser(data, (err, results) => {
     if (!err) {
       if (results.affectedRows) {
-        return response(res, 200, true, 'Register SuccesFully')
+        return response(res, 200, true, 'Register SuccesFully, You can Login Now')
       } else {
         return response(res, 500, false, 'An error Occurred')
       }
@@ -33,7 +32,8 @@ exports.login = (req, res) => {
       const user = results[0]
       const compare = await bcrypt.compare(password, user.password)
       if (compare) {
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.APP_KEY, { expiresIn: '10m' })
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.APP_KEY)
+        // const token = jwt.sign({ id: user.id, email: user.email }, process.env.APP_KEY, { expiresIn: '10m' })
         return response(res, 200, true, 'Login Success', { token })
       } else {
         return response(res, 401, false, 'wrong email or password')

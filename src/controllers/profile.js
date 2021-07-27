@@ -1,11 +1,24 @@
 const { getUserById, updateUser, updateUserPartial, changePasswordUser, updateUser2 } = require('../models/user')
 const { response } = require('../helpers/standardRes')
 const bcrypt = require('bcrypt')
+const { APP_URL } = process.env
 
 exports.getUser = (req, res) => {
   getUserById(req.authUser.id, (err, results, _fields) => {
     if (!err) {
-      return response(res, 200, true, 'current user', results)
+      const data = {
+        id: '',
+        userName: '',
+        lastName: '',
+        firstName: '',
+        picture: '',
+        email: '',
+        address: '',
+        ...results[0]
+      }
+      const pic = data
+      pic.picture = `${APP_URL}${pic.picture}`
+      return response(res, 200, true, 'current user', data)
     } else {
       return response(res, 500, false, 'An error Occurred')
     }
@@ -16,12 +29,11 @@ exports.updateUser = (req, res) => {
   getUserById(req.authUser.id, async (err, results, _fields) => {
     if (!err) {
       if (results.length > 0) {
-        const data = req.body
-        if (req.body.password === true) {
-          const newPassword = data.password = await bcrypt.hash(data.password, await bcrypt.genSalt())
-          const { name, email, address } = req.body
-          const updateData = { id: req.authUser.id, name, email, password: newPassword, address }
-          updateUser(updateData, (err, results) => {
+        req.body.picture = req.file ? `${process.env.APP_UPLOAD_ROUTE}/${req.file.filename}` : null
+        if (req.body.picture !== null) {
+          const { userName, email, address, firstName, lastName, picture, phoneNumber } = req.body
+          const updateData = { id: req.authUser.id, userName, email, address, firstName, lastName, picture, phoneNumber }
+          updateUser2(updateData, (err, results) => {
             if (!err) {
               return response(res, 200, true, 'Update SuccessFully', results)
             } else {
@@ -29,9 +41,9 @@ exports.updateUser = (req, res) => {
             }
           })
         } else {
-          const { name, email, address } = req.body
-          const updateData = { id: req.authUser.id, name, email, address }
-          updateUser2(updateData, (err, results) => {
+          const { userName, email, address, firstName, lastName, phoneNumber } = req.body
+          const updateData = { id: req.authUser.id, userName, email, address, firstName, lastName, phoneNumber }
+          updateUser(updateData, (err, results) => {
             if (!err) {
               return response(res, 200, true, 'Update SuccessFully', results)
             } else {

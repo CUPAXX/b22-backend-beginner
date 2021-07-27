@@ -1,8 +1,8 @@
 module.exports = {
-  name: {
+  phoneNumber: {
     in: ['body'],
     isLength: {
-      errorMessage: 'name length min 5 character',
+      errorMessage: 'phone number length min 11 character',
       options: {
         min: 4
       }

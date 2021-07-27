@@ -8,7 +8,7 @@ exports.createItem = (data, cb) => {
 
 exports.getItemById = (id, cb) => {
   db.query(`
-  SELECT item.id, item.productName, item.picture, item.price as base_price, variants.aditional_price, (item.price + variants.aditional_price) as end_price, variants.variantsName as variants, variants.code as variants_code, item.deliveryCondition, item.description, item.stock, item.createAt, item.updatedAt 
+  SELECT item.id, item.productName, variants.id as variant_id, item.picture, item.price as base_price, variants.aditional_price, (item.price + variants.aditional_price) as end_price, variants.variantsName as variants, variants.code as variants_code, item.deliveryCondition, item.description, item.stock, item.createAt, item.updatedAt 
   FROM item
   INNER JOIN product_variants ON product_variants.id_product = item.id
   INNER JOIN variants ON product_variants.id_variants = variants.id WHERE item.id=?
@@ -56,6 +56,13 @@ exports.getItemByCondition = (cond, cb) => {
   ORDER BY item.${orderBy} ${sort} 
   LIMIT ? OFFSET ?
   `, [cond.limit, cond.offset], cb)
+}
+
+exports.getItemByConditionSec = (cb) => {
+  db.query(`
+  SELECT item.id, item.productName, item.picture, item.price, item.deliveryCondition, item.description, item.stock, item.createAt, item.updatedAt 
+  FROM item
+  `, cb)
 }
 exports.getItemCount = (cond, cb) => {
   db.query(`

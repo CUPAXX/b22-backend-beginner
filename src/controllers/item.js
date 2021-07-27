@@ -66,15 +66,17 @@ exports.updateItemPartially = (req, res) => {
     if (results[0].role === 'Admin') {
       const { id: stringId } = req.params
       const id = parseInt(stringId)
-      const key = Object.keys(req.body)
-      const firstColumn = key[0]
-      const updateData = { id, [firstColumn]: req.body[firstColumn] }
+
       itemModel.getItemById(id, (err, results, _fields) => {
         if (!err) {
           if (results.length > 0) {
+            req.body.picture = req.file ? `${process.env.APP_UPLOAD_ROUTE}/${req.file.filename}` : null
+            const key = Object.keys(req.body)
             if (key.length > 1) {
               return standardRes(res, 400, false, 'System Only Need 1 Column')
             } else {
+              const firstColumn = key[0]
+              const updateData = { id, [firstColumn]: req.body[firstColumn] }
               itemModel.updateItemPartial(updateData, (err, results, _fields) => {
                 if (!err) {
                   return standardRes(res, 200, true, 'Update Success', results)
@@ -166,6 +168,7 @@ exports.getDetailItem = (req, res) => {
     if (!err) {
       if (results.length > 0) {
         const data = {
+          id: '',
           productName: '',
           picture: '',
           description: '',
@@ -175,17 +178,20 @@ exports.getDetailItem = (req, res) => {
           updatedAt: '',
           ...results[0]
         }
-        const hiddenColumn = ['base_price', 'aditional_price', 'end_price', 'variants', 'variants_code']
+        const hiddenColumn = ['aditional_price', 'end_price', 'variants', 'variants_code', 'variant_id']
         hiddenColumn.forEach(column => {
           delete data[column]
         })
         results.forEach(item => {
           data.variant.push({
+            id: item.variant_id,
             name: item.variants,
             code: item.variants_code,
             price: item.end_price
           })
         })
+        const pic = data
+        pic.picture = `${APP_URL}${pic.picture}`
         return standardRes(res, 200, true, 'Detail Item', data)
       } else {
         return standardRes(res, 400, false, 'Item Not Found')
@@ -217,13 +223,17 @@ exports.getItem = (req, res) => {
   cond.search = cond.search || ''
   cond.sort = cond.sort || {}
   cond.sort.createAt = cond.sort.createAt || 'asc'
-  cond.limit = parseInt(cond.limit) || 5
+  cond.limit = parseInt(cond.limit) || 8
   cond.offset = parseInt(cond.limit) || 0
   cond.page = parseInt(cond.page) || 1
   cond.offset = (cond.page * cond.limit) - cond.limit
   const pageInfo = {}
   itemModel.getItemByCondition(cond, (err, results, _fields) => {
     if (!err) {
+      results.forEach((pic, index) => {
+        results[index].picture = `${APP_URL}${results[index].picture}`
+      })
+
       itemModel.getItemCount(cond, (err, resultCount, _fields) => {
         if (!err) {
           const totalData = resultCount[0].count
@@ -239,6 +249,19 @@ exports.getItem = (req, res) => {
           return standardRes(res, 500, false, 'An Error Occurred')
         }
       })
+    } else {
+      return standardRes(res, 500, false, 'An Error Occurred')
+    }
+  })
+}
+
+exports.getItemSec = (req, res) => {
+  itemModel.getItemByConditionSec((err, results, _fields) => {
+    if (!err) {
+      results.forEach((pic, index) => {
+        results[index].picture = `${APP_URL}${results[index].picture}`
+      })
+      return standardRes(res, 200, true, 'List Of Product', results)
     } else {
       return standardRes(res, 500, false, 'An Error Occurred')
     }

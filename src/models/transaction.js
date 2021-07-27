@@ -25,6 +25,6 @@ exports.getDetailTransaction = (id, cb) => {
   SELECT transaction.code, item_transaction.name as product_name, item_transaction.price, item_transaction.amount, transaction.total, transaction.tax, transaction.shipping_cost, transaction.shipping_address, transaction.payment_method
   FROM transaction 
   INNER JOIN item_transaction ON item_transaction.id_transaction = transaction.id
-  WHERE id_user=?
+  WHERE transaction.id=?
   `, [id], cb)
 }
