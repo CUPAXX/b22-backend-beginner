@@ -1,5 +1,5 @@
-## This backend for Coffeshop web app
-Backend Server for <a href="https://github.com/CUPAXX/b22-frontend-coffeshop">Cuanku Mobile Apps</a>
+## Backend Coffeshop web app
+Backend Server for <a href="https://github.com/CUPAXX/b22-frontend-coffeshop">Coffeshop Web App</a>
 <br> </br>
 
 # Prerequisites
