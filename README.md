@@ -64,4 +64,4 @@ DB_DATABASE = coffeeshop //db name
 
 
 ## License
-© [M Fiqry Arahmansyah] (https://github.com/CUPAXX)
+© [M Fiqry Arahmansyah](https://github.com/CUPAXX)
