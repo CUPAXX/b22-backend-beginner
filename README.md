@@ -1,20 +1,22 @@
 <h1 align="center">Backend - Coffeshop RESTfull API</h1>
 
 Backend Server for <a href="https://github.com/CUPAXX/b22-frontend-coffeshop">Coffeshop Web App</a>
-<br> </br>
 #background_projek. [More about Express](https://en.wikipedia.org/wiki/Express.js)
+
 
 ## Built With
 
 [![Express.js](https://img.shields.io/badge/Express.js-4.x-orange.svg?style=rounded-square)](https://expressjs.com/en/starter/installing.html)
 [![Node.js](https://img.shields.io/badge/Node.js-v.12.13-green.svg?style=rounded-square)](https://nodejs.org/)
 
+
 ## Requirements
 
 1. <a href="https://nodejs.org/en/download/">Node Js</a>
 2. Node_modules
 3. <a href="https://www.getpostman.com/">Postman</a>
-4. Web Server (ex. localhost)
+4. Web Server (ex. xampp)
+
 
 ## How to run the app ?
 
@@ -26,6 +28,7 @@ Backend Server for <a href="https://github.com/CUPAXX/b22-frontend-coffeshop">Co
 6. Open Postman desktop application or Chrome web app extension that has installed before
 7. Choose HTTP Method and enter request url.(ex. localhost:3000/)
 8. You can see all the end point [here](https://documenter.getpostman.com/view/9852901/TVmS8Fce)
+
 
 # Feature
 <ul>
@@ -40,6 +43,25 @@ Backend Server for <a href="https://github.com/CUPAXX/b22-frontend-coffeshop">Co
 </ul>
 
 
-<br> </br>
+## Set up .env file
+
+Open .env file on your favorite code editor, and copy paste this code below :
+
+```
+NODE_ENV = development
+
+APP_URL=http://localhost:8080 //app url access
+APP_KEY=MyBackend //key access
+APP_UPLOAD_ROUTE=/upload // route upload file
+APP_UPLOAD_PATH=assets/images //route upload path
+APP_TRANSACTION_PREFIX=CS //transaction code prefix
+
+DB_HOST = localhost // db host
+DB_USER = root // db user
+DB_PASSWORD =  //db password
+DB_DATABASE = coffeeshop //db name
+```
+
+
 ## License
 © [M Fiqry Arahmansyah] (https://github.com/CUPAXX)
