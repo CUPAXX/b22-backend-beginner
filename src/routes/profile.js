@@ -1,7 +1,7 @@
 const { getUser, updateUser, changePasswordUser } = require('../controllers/profile')
 
 const route = require('express').Router()
-const itemPicture = require('../helpers/upload').single('picture')
+const itemPicture = require('../helpers/upload')
 
 route.get('/profile', getUser)
 route.patch('/profile', itemPicture, updateUser)

@@ -1,6 +1,6 @@
 const route = require('express').Router()
 const auth = require('../middlewares/auth')
-const itemPicture = require('../helpers/upload').single('picture')
+const itemPicture = require('../helpers/upload')
 const { checkSchema } = require('express-validator')
 
 const itemController = require('../controllers/item')
