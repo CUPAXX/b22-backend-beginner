@@ -66,8 +66,7 @@ exports.getItemByConditionSec = (cb) => {
 }
 exports.getItemCount = (cond, cb) => {
   db.query(`
-  SELECT COUNT (item.id) as count, item.productName, item.picture, item.price, item.deliveryCondition, item.description, item.stock, item.createAt, item.updatedAt 
-  FROM item 
+  SELECT COUNT (item.id) as count FROM item 
   WHERE item.productName LIKE '%${cond.search}%'
   `, cb)
 }
