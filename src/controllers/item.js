@@ -246,7 +246,7 @@ exports.getItem = (req, res) => {
           pageInfo.prevPage = pageInfo.currentPage > 1 ? `${APP_URL}/item?page=${cond.page - 1}` : null
           return standardRes(res, 200, true, 'List Of Product', results, pageInfo)
         } else {
-          return standardRes(res, 500, false, 'An Error Occurred1')
+          return standardRes(res, 500, false, err)
         }
       })
     } else {
