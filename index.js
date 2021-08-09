@@ -5,7 +5,7 @@ const auth = require('./src/middlewares/auth')
 require('dotenv').config()
 
 const app = express()
-const { APP_UPLOAD_ROUTE, APP_UPLOAD_PATH } = process.env
+const { APP_UPLOAD_ROUTE, APP_UPLOAD_PATH, PORT } = process.env
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cors())
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
   return res.json(data)
 })
 
-app.listen(8080, () => {
+app.listen(PORT || 8080, () => {
   console.log('App running on port 8080')
 })
 
