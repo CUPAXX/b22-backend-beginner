@@ -42,6 +42,7 @@ exports.createChat = (req, res) => {
     }
   })
 }
+// bug fix
 
 exports.deleteChat = (req, res) => {
   getUserById(req.authUser.id, (err, results) => {
