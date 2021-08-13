@@ -40,3 +40,6 @@ app.use('/private', auth, transactionRoute)
 
 const profileRoute = require('./src/routes/profile')
 app.use('/private', auth, profileRoute)
+
+const chatRoute = require('./src/routes/chat')
+app.use('/private', auth, chatRoute)

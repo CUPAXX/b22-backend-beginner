@@ -60,3 +60,7 @@ exports.changePasswordUser = (data, cb) => {
   UPDATE user SET password=? WHERE id=?
   `, [data.password, data.id], cb)
 }
+
+exports.getUserByPhone = (data, cb) => {
+  db.query('SELECT * from user WHERE phoneNumber=?', [data.phone], cb)
+}
