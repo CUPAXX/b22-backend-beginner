@@ -1,6 +1,7 @@
 const { response } = require('../helpers/standardRes')
 const { createChat, updateChat, deleteChat, getUserChat, getAllUserChat } = require('../models/chat')
-const { getUserByPhone, getUserById } = require('../models/user')
+const { getUserByPhone, getUserById, searchUser } = require('../models/user')
+const { APP_URL } = process.env
 
 exports.createChat = (req, res) => {
   const data = req.body
@@ -74,10 +75,24 @@ exports.deleteChat = (req, res) => {
 exports.getUserChat = (req, res) => {
   getUserById(req.authUser.id, (err, results) => {
     if (!err) {
-      const data = { sender: results[0].phoneNumber, recipient: results[0].phoneNumber }
+      const newSender = results[0].phoneNumber
+      const newUserName = results[0].userName
+      const data = { sender: newSender, recipient: newSender }
       getUserChat(data, (err, results) => {
         if (!err) {
           if (results.length > 0) {
+            results.forEach((pic, index) => {
+              results[index].picture = `${APP_URL}${results[index].picture}`
+            })
+
+            let index = results.length - 1
+            while (index >= 0) {
+              if (results[index].userName === newUserName) {
+                results.splice(index, 1)
+              }
+              index -= 1
+            }
+
             return response(res, 200, true, 'List User Chat', results)
           } else {
             return response(res, 404, false, 'You Dont Have Any Conversation')
@@ -95,10 +110,22 @@ exports.getUserChat = (req, res) => {
 exports.getAllUserChat = (req, res) => {
   getUserById(req.authUser.id, (err, results) => {
     if (!err) {
+      const newUserName = results[0].userName
       const data = { sender1: results[0].phoneNumber, sender2: req.query.user, recipient1: req.query.user, recipient2: results[0].phoneNumber }
       getAllUserChat(data, (err, results) => {
         if (!err) {
           if (results.length > 0) {
+            results.forEach((pic, index) => {
+              results[index].picture = `${APP_URL}${results[index].picture}`
+            })
+            let index = results.length - 1
+            while (index >= 0) {
+              if (results[index].userName === newUserName) {
+                results.splice(index, 1)
+              }
+              index -= 1
+            }
+
             return response(res, 200, true, 'List All User Chat', results)
           } else {
             return response(res, 404, false, 'You Dont Have Any Conversation')
@@ -109,6 +136,26 @@ exports.getAllUserChat = (req, res) => {
       })
     } else {
       return response(res, 500, false, 'An error occured')
+    }
+  })
+}
+
+exports.searchUser = (req, res) => {
+  const data = req.query
+  data.column = data.column || 'userName'
+  data.search = data.search || ''
+  searchUser(data, (err, results) => {
+    if (!err) {
+      if (results.length > 0) {
+        results.forEach((pic, index) => {
+          results[index].picture = `${APP_URL}${results[index].picture}`
+        })
+        return response(res, 200, true, 'List User', results)
+      } else {
+        return response(res, 404, false, 'User Not Found')
+      }
+    } else {
+      return response(res, 500, false, 'An error Occured')
     }
   })
 }

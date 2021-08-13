@@ -64,3 +64,7 @@ exports.changePasswordUser = (data, cb) => {
 exports.getUserByPhone = (data, cb) => {
   db.query('SELECT * from user WHERE phoneNumber=?', [data.phone], cb)
 }
+
+exports.searchUser = (data, cb) => {
+  db.query(`SELECT id, userName, firstName, lastName, phoneNumber, picture, email, address FROM user WHERE ${data.column} LIKE '%${data.search}%' `, cb)
+}
