@@ -19,6 +19,10 @@ exports.createChat = (req, res) => {
                   const finalData = { sender: newSender, recipient: data.recipient, message: data.message }
                   createChat(finalData, (err, results) => {
                     if (!err) {
+                      req.socket.emit(data.recipient, {
+                        message: data.message,
+                        sender: newSender
+                      })
                       return response(res, 200, true, 'Message Send Successfully', results)
                     } else {
                       return response(res, 500, false, 'An error Ocurred')
