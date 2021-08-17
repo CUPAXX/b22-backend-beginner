@@ -19,5 +19,5 @@ exports.getAllUserChat = (data, cb) => {
 }
 
 exports.getUserChat = (data, cb) => {
-  db.query('SELECT chats.id, chats.sender, chats.recipient, chats.message, user.picture, user.userName, user.firstName, user.lastName, user.phoneNumber from chats LEFT JOIN user ON (chats.sender=user.phoneNumber or recipient=user.phoneNumber) where (sender=? or recipient=?) and isLastest=1', [data.sender, data.recipient], cb)
+  db.query('SELECT chats.id, chats.sender, chats.recipient, chats.message, user.picture, user.userName, user.firstName, user.lastName, user.phoneNumber from chats LEFT JOIN user ON (chats.sender=user.phoneNumber or recipient=user.phoneNumber) where (sender=? or recipient=?) and isLastest=1 ORDER BY chats.createdAt DESC', [data.sender, data.recipient], cb)
 }
