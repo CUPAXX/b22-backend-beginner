@@ -1,5 +1,5 @@
 const { response } = require('../helpers/standardRes')
-const { createChat, updateChat, deleteChat, getUserChat, getAllUserChat } = require('../models/chat')
+const { createChat, updateChat, deleteChat, getUserChat, getAllUserChat, uploadFile, updateDelete } = require('../models/chat')
 const { getUserByPhone, getUserById, searchUser } = require('../models/user')
 const { APP_URL } = process.env
 
@@ -47,22 +47,71 @@ exports.createChat = (req, res) => {
     }
   })
 }
+
+exports.createUpload = (req, res) => {
+  const data = req.body
+  const subData = { phone: data.recipient }
+  getUserByPhone(subData, (err, results) => {
+    if (!err) {
+      if (results.length > 0) {
+        getUserById(req.authUser.id, (err, results) => {
+          if (!err) {
+            if (results.length > 0) {
+              const newSender = results[0].phoneNumber
+              const updateData = { sender1: newSender, sender2: data.recipient, recipient1: data.recipient, recipient2: results[0].phoneNumber }
+              updateChat(updateData, (err, results) => {
+                if (!err) {
+                  req.body.picture = req.file ? `${process.env.APP_UPLOAD_ROUTE}/${req.file.filename}` : null
+                  const finalData = { sender: newSender, recipient: data.recipient, picture: data.picture }
+                  uploadFile(finalData, (err, results) => {
+                    if (!err) {
+                      req.socket.emit(data.recipient, {
+                        message: data.picture,
+                        sender: newSender
+                      })
+                      return response(res, 200, true, 'File Send Successfully', results)
+                    } else {
+                      return response(res, 500, false, 'An error Ocurred')
+                    }
+                  })
+                }
+              })
+            } else {
+              return response(res, 404, false, 'You need to login first')
+            }
+          } else {
+            return response(res, 500, false, 'An error Ocurred')
+          }
+        })
+      } else {
+        return response(res, 404, false, 'User Destination Not Found')
+      }
+    } else {
+      return response(res, 500, false, 'An error Ocurred')
+    }
+  })
+}
 // bug fix
 
 exports.deleteChat = (req, res) => {
+  const data2 = req.body
   getUserById(req.authUser.id, (err, results) => {
     if (!err) {
       if (results.length > 0) {
         const { id: stringId } = req.params
         const id = parseInt(stringId)
+        const newSender = results[0].phoneNumber
         const data = { sender: results[0].phoneNumber, recipient: results[0].phoneNumber, id }
-        deleteChat(data, (err, results) => {
+        deleteChat(data, (err, result) => {
           if (!err) {
-            if (results.affectedRows > 0) {
-              return response(res, 200, true, 'Delete Chat Successfully', results)
-            } else {
-              return response(res, 404, false, 'Chat Not Found')
-            }
+            const finalData = { sender1: newSender, recipient1: data2.recipient, recipient2: data2.recipient, sender2: newSender }
+            updateDelete(finalData, (err, results) => {
+              if (!err) {
+                return response(res, 200, true, 'Delete Chat Successfully', results)
+              } else {
+                return response(res, 500, false, 'An error Ocurred')
+              }
+            })
           } else {
             return response(res, 404, false, 'Chat Not Found')
           }
@@ -122,6 +171,9 @@ exports.getAllUserChat = (req, res) => {
             results.forEach((pic, index) => {
               results[index].picture = `${APP_URL}${results[index].picture}`
             })
+            results.forEach((pic, index) => {
+              results[index].fileUpload = `${APP_URL}${results[index].fileUpload}`
+            })
             let index = results.length - 1
             while (index >= 0) {
               if (results[index].userName === newUserName) {
@@ -132,7 +184,7 @@ exports.getAllUserChat = (req, res) => {
 
             return response(res, 200, true, 'List All User Chat', results)
           } else {
-            return response(res, 404, false, 'You Dont Have Any Conversation')
+            return response(res, 200, true, 'You Dont Have Any Conversation', results)
           }
         } else {
           return response(res, 500, false, 'An error occured')
@@ -148,7 +200,7 @@ exports.searchUser = (req, res) => {
   const data = req.query
   data.column = data.column || 'userName'
   data.search = data.search || ''
-  searchUser(data, (err, results) => {
+  searchUser(data, req.authUser.id, (err, results) => {
     if (!err) {
       if (results.length > 0) {
         results.forEach((pic, index) => {
