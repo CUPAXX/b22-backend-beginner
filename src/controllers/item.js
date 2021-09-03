@@ -202,23 +202,23 @@ exports.getDetailItem = (req, res) => {
   })
 }
 
-exports.getItemByCategory = (req, res) => {
-  const { id: stringId } = req.params
-  const id = parseInt(stringId)
-  itemModel.getItemByCategory(id, (err, results, _fields) => {
-    if (!err) {
-      if (results.length > 0) {
-        return standardRes(res, 200, true, 'Detail Item', results)
-      } else {
-        return standardRes(res, 400, false, 'Item Not Found')
-      }
-    } else {
-      return standardRes(res, 500, false, 'An Error Occurred')
-    }
-  })
-}
+// exports.getItemByCategory = (req, res) => {
+//   const { id: stringId } = req.params
+//   const id = parseInt(stringId)
+//   itemModel.getItemByCategory(id, (err, results, _fields) => {
+//     if (!err) {
+//       if (results.length > 0) {
+//         return standardRes(res, 200, true, 'Detail Item', results)
+//       } else {
+//         return standardRes(res, 400, false, 'Item Not Found')
+//       }
+//     } else {
+//       return standardRes(res, 500, false, 'An Error Occurred')
+//     }
+//   })
+// }
 
-exports.getItem = (req, res) => {
+exports.getItem = async (req, res) => {
   const cond = req.query
   cond.search = cond.search || ''
   cond.sort = cond.sort || {}
@@ -228,44 +228,30 @@ exports.getItem = (req, res) => {
   cond.page = parseInt(cond.page) || 1
   cond.offset = (cond.page * cond.limit) - cond.limit
   const pageInfo = {}
-  itemModel.getItemByCondition(cond, (err, results, _fields) => {
-    if (!err) {
-      results.forEach((pic, index) => {
-        results[index].picture = `${APP_URL}${results[index].picture}`
-      })
+  const results = await itemModel.getItemByCondition(cond)
 
-      itemModel.getItemCount(cond, (err, resultCount, _fields) => {
-        if (!err) {
-          const totalData = resultCount[0].count
-          const totalPage = Math.ceil(totalData / cond.limit)
-          pageInfo.totalData = totalData
-          pageInfo.currentPage = cond.page
-          pageInfo.totalPage = totalPage
-          pageInfo.limitData = cond.limit
-          pageInfo.nextPage = pageInfo.currentPage < totalPage ? `${APP_URL}/item?page=${cond.page + 1}` : null
-          pageInfo.prevPage = pageInfo.currentPage > 1 ? `${APP_URL}/item?page=${cond.page - 1}` : null
-          return standardRes(res, 200, true, 'List Of Product', results, pageInfo)
-        } else {
-          return standardRes(res, 500, false, err)
-        }
-      })
-    } else {
-      return standardRes(res, 500, false, 'An Error Occurred2')
-    }
+  results.forEach((pic, index) => {
+    results[index].picture = `${APP_URL}${results[index].picture}`
   })
+
+  const resultCount = await itemModel.getItemCount(cond)
+  const totalData = resultCount[0].count
+  const totalPage = Math.ceil(totalData / cond.limit)
+  pageInfo.totalData = totalData
+  pageInfo.currentPage = cond.page
+  pageInfo.totalPage = totalPage
+  pageInfo.limitData = cond.limit
+  pageInfo.nextPage = pageInfo.currentPage < totalPage ? `${APP_URL}/item?page=${cond.page + 1}` : null
+  pageInfo.prevPage = pageInfo.currentPage > 1 ? `${APP_URL}/item?page=${cond.page - 1}` : null
+  return standardRes(res, 200, true, 'List Of Product', results, pageInfo)
 }
 
-exports.getItemSec = (req, res) => {
-  itemModel.getItemByConditionSec((err, results, _fields) => {
-    if (!err) {
-      results.forEach((pic, index) => {
-        results[index].picture = `${APP_URL}${results[index].picture}`
-      })
-      return standardRes(res, 200, true, 'List Of Product', results)
-    } else {
-      return standardRes(res, 500, false, 'An Error Occurred')
-    }
+exports.getItemSec = async (req, res) => {
+  const results = await itemModel.getItemByConditionSec()
+  results.forEach((pic, index) => {
+    results[index].picture = `${APP_URL}${results[index].picture}`
   })
+  return standardRes(res, 200, true, 'List Of Product', results)
 }
 
 // exports.sortingItem = (req, res) => {

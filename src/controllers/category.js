@@ -23,109 +23,68 @@ const { APP_URL } = process.env
 //   }
 // }
 
-exports.getCategory = (req, res) => {
-  categoryModel.getCategory((err, results, _fields) => {
-    if (!err) {
-      return standardRes(res, 200, true, 'List of category', results)
-    } else {
-      return standardRes(res, 500, false, 'An Error Occurred')
-    }
-  })
+exports.getCategory = async (req, res) => {
+  const results = await categoryModel.getCategory()
+  return standardRes(res, 200, true, 'List of category', results)
 }
 
-exports.createCategory = (req, res) => {
-  getUserRole(req.authUser.id, (err, results) => {
-    if (err) {
-      return response(res, 500, false, 'Something Wrong')
-    }
-    if (results[0].role === 'Admin') {
-      categoryModel.createCategory(req.body, () => {
-        return standardRes(res, 200, true, 'Category has been create successfully')
-      })
-    } else {
-      return response(res, 500, false, 'You are not admin can\'t do this action')
-    }
-  })
+exports.createCategory = async (req, res) => {
+  const user = await getUserRole(req.authUser.id)
+  if (user[0].role === 'Admin') {
+    await categoryModel.createCategory(req.body)
+    return standardRes(res, 200, true, 'Category has been create successfully')
+  } else {
+    return response(res, 500, false, 'You are not admin can\'t do this action')
+  }
 }
 
-exports.updateCategory = (req, res) => {
-  getUserRole(req.authUser.id, (err, results) => {
-    if (err) {
-      return response(res, 500, false, 'Something Wrong')
-    }
-    if (results[0].role === 'Admin') {
-      const { id } = req.params
-      categoryModel.getCategoryById(id, (err, results, _fields) => {
-        if (!err) {
-          if (results.length > 0) {
-            const { name } = req.body
-            const updateData = { id, name, updatedAt: timeHelper.now() }
-            categoryModel.updateCategory(updateData, (err, results, _fields) => {
-              if (!err) {
-                return standardRes(res, 200, true, 'Category update successfully', results)
-              } else {
-                return standardRes(res, 500, false, 'An Error Occurred')
-              }
-            })
-          } else {
-            return standardRes(res, 400, false, 'Category Not Found')
-          }
-        } else {
-          return standardRes(res, 500, false, 'An Error Occurred')
-        }
-      })
+exports.updateCategory = async (req, res) => {
+  const user = await getUserRole(req.authUser.id)
+  if (user[0].role === 'Admin') {
+    const { id } = req.params
+    const resultCate = await categoryModel.getCategoryById(id)
+    if (resultCate.length > 0) {
+      const { name } = req.body
+      const updateData = { id, name, updatedAt: timeHelper.now() }
+      const results = await categoryModel.updateCategory(updateData)
+      return standardRes(res, 200, true, 'Category update successfully', results)
     } else {
-      return response(res, 500, false, 'You are not admin can\'t do this action')
+      return standardRes(res, 400, false, 'Category Not Found')
     }
-  })
+  } else {
+    return response(res, 500, false, 'You are not admin can\'t do this action')
+  }
 }
 
-exports.deleteCategory = (req, res) => {
-  getUserRole(req.authUser.id, (err, results) => {
-    if (err) {
-      return response(res, 500, false, 'Something Wrong')
-    }
-    if (results[0].role === 'Admin') {
-      const { id: stringId } = req.params
-      const id = parseInt(stringId)
-      categoryModel.getCategoryById(id, (err, results, _fields) => {
-        if (!err) {
-          if (results.length > 0) {
-            categoryModel.deleteCategory(id, (err, results, _fields) => {
-              if (!err) {
-                return standardRes(res, 200, true, 'Category has been Delete', results)
-              }
-            })
-          } else {
-            return standardRes(res, 400, false, 'Category Not Found')
-          }
-        } else {
-          return standardRes(res, 500, false, 'An Error Occurred')
-        }
-      })
+exports.deleteCategory = async (req, res) => {
+  const user = await getUserRole(req.authUser.id)
+  if (user[0].role === 'Admin') {
+    const { id } = req.params
+    const resultsCate = await categoryModel.getCategoryById(id)
+    if (resultsCate.length >= 1) {
+      await categoryModel.deleteCategory(id)
+      return standardRes(res, 200, true, 'Category has been Delete')
     } else {
-      return response(res, 500, false, 'You are not admin can\'t do this action')
+      return standardRes(res, 400, false, 'Category Not Found')
     }
-  })
+  } else {
+    return response(res, 500, false, 'You are not admin can\'t do this action')
+  }
 }
 
-exports.getCategoryItem = (req, res) => {
-  const { id: stringId } = req.params
-  const id = parseInt(stringId)
-  categoryModel.getCategoryItem(id, (err, results, _fields) => {
-    if (!err) {
-      if (results.length > 0) {
-        results.forEach((pic, index) => {
-          results[index].picture = `${APP_URL}${results[index].picture}`
-        })
-        return standardRes(res, 200, true, 'Detail category Item', results)
-      } else {
-        return standardRes(res, 400, false, 'category Not Found')
-      }
-    } else {
-      return standardRes(res, 500, false, 'An Error Occurred')
-    }
-  })
+exports.getCategoryItem = async (req, res) => {
+  const { id } = req.params
+  // const id = parseInt(stringId)
+  const results = await categoryModel.getCategoryItem(id)
+
+  if (results.length > 0) {
+    results.forEach((pic, index) => {
+      results[index].picture = `${APP_URL}${results[index].picture}`
+    })
+    return standardRes(res, 200, true, 'Detail category Item', results)
+  } else {
+    return standardRes(res, 400, false, 'category Not Found')
+  }
 }
 
 // getUserRole(req.authUser.id, (err, results) => {

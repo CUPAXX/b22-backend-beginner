@@ -148,7 +148,7 @@ exports.getUserChat = (req, res) => {
 
             return response(res, 200, true, 'List User Chat', results)
           } else {
-            return response(res, 404, false, 'You Dont Have Any Conversation')
+            return response(res, 200, true, 'You Dont Have Any Conversation', results)
           }
         } else {
           return response(res, 500, false, 'An error occured')

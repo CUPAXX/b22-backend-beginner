@@ -22,88 +22,54 @@ const { getUserRole } = require('../models/user')
 //   }
 // }
 
-exports.getVariants = (req, res) => {
-  variantsModel.getVariants((err, results, _fields) => {
-    if (!err) {
-      return standardRes(res, 200, true, 'List of variants', results)
-    } else {
-      return standardRes(res, 500, false, 'An Error Occurred')
-    }
-  })
+exports.getVariants = async (req, res) => {
+  const results = await variantsModel.getVariants()
+  return standardRes(res, 200, true, 'List of variants', results)
 }
 
-exports.createVariants = (req, res) => {
-  getUserRole(req.authUser.id, (err, results) => {
-    if (err) {
-      return response(res, 500, false, 'Something Wrong')
-    }
-    if (results[0].role === 'Admin') {
-      variantsModel.createVariants(req.body, () => {
-        return standardRes(res, 200, true, 'variants has been successfully created')
-      })
-    } else {
-      return response(res, 500, false, 'You are not admin can\'t do this action')
-    }
-  })
+exports.createVariants = async (req, res) => {
+  const role = await getUserRole(req.authUser.id)
+  if (role[0].role === 'Admin') {
+    await variantsModel.createVariants(req.body)
+    return standardRes(res, 200, true, 'variants has been successfully created')
+  } else {
+    return response(res, 500, false, 'You are not admin can\'t do this action')
+  }
 }
 
-exports.updateVariants = (req, res) => {
-  getUserRole(req.authUser.id, (err, results) => {
-    if (err) {
-      return response(res, 500, false, 'Something Wrong')
-    }
-    if (results[0].role === 'Admin') {
-      const { id } = req.params
-      variantsModel.getVariantsById(id, (err, results, _fields) => {
-        if (!err) {
-          if (results.length > 0) {
-            const { name, aditionalPrice } = req.body
-            const updateData = { id, name, aditional_price: aditionalPrice, updatedAt: timeHelper.now() }
-            variantsModel.updateVariants(updateData, (err, results, _fields) => {
-              if (!err) {
-                return standardRes(res, 200, true, 'variants update successfully', results)
-              } else {
-                return standardRes(res, 500, false, 'An Error Occurred')
-              }
-            })
-          } else {
-            return standardRes(res, 400, false, 'variants Not Found')
-          }
-        }
-      })
+exports.updateVariants = async (req, res) => {
+  const user = await getUserRole(req.authUser.id)
+  if (user[0].role === 'Admin') {
+    const { id } = req.params
+    const resultVar = await variantsModel.getVariantsById(id)
+    if (resultVar.length > 0) {
+      const { name, aditionalPrice } = req.body
+      const updateData = { id, name, aditional_price: aditionalPrice, updatedAt: timeHelper.now() }
+      const results = await variantsModel.updateVariants(updateData)
+      return standardRes(res, 200, true, 'variants update successfully', results)
     } else {
-      return response(res, 500, false, 'You are not admin can\'t do this action')
+      return standardRes(res, 400, false, 'variants Not Found')
     }
-  })
+  } else {
+    return response(res, 500, false, 'You are not admin can\'t do this action')
+  }
 }
 
-exports.deleteVariants = (req, res) => {
-  getUserRole(req.authUser.id, (err, results) => {
-    if (err) {
-      return response(res, 500, false, 'Something Wrong')
-    }
-    if (results[0].role === 'Admin') {
-      const { id: stringId } = req.params
-      const id = parseInt(stringId)
-      variantsModel.getVariantsById(id, (err, results, _fields) => {
-        if (!err) {
-          if (results.length > 0) {
-            variantsModel.deleteVariants(id, (err, results, _fields) => {
-              if (!err) {
-                return standardRes(res, 200, true, 'variants delete success', results)
-              }
-            })
-          } else {
-            return standardRes(res, 400, false, 'variants Not Found')
-          }
-        } else {
-          return standardRes(res, 500, false, 'An Error Occurred')
-        }
-      })
+exports.deleteVariants = async (req, res) => {
+  const user = await getUserRole(req.authUser.id)
+  if (user[0].role === 'Admin') {
+    const { id: stringId } = req.params
+    const id = parseInt(stringId)
+    const resultsVar = await variantsModel.getVariantsById(id)
+    if (resultsVar.length > 0) {
+      const results = await variantsModel.deleteVariants(id)
+      return standardRes(res, 200, true, 'variants delete success', results)
     } else {
-      return response(res, 500, false, 'You are not admin can\'t do this action')
+      return standardRes(res, 400, false, 'variants Not Found')
     }
-  })
+  } else {
+    return response(res, 500, false, 'You are not admin can\'t do this action')
+  }
 }
 
 // exports.sortingVariants = (req, res) => {

@@ -1,17 +1,25 @@
 const db = require('../helpers/db')
+const { promisify } = require('util')
+const execPromise = promisify(db.query).bind(db)
 
 const table = 'user'
 
-exports.createUser = (data, cb) => {
-  db.query(`
+exports.createUser = (data) => {
+  return execPromise(`
   INSERT INTO ${table} (phoneNumber, email, password) VALUES (?, ?, ?)
-  `, [data.phoneNumber, data.email, data.password], cb)
+  `, [data.phoneNumber, data.email, data.password])
 }
 
-exports.getUserByEmail = (email, cb) => {
-  db.query(`
-  SELECT id, userName, firstName, lastName, email, password FROM ${table} WHERE email=?
-  `, [email], cb)
+exports.getUserByEmail = (email) => {
+  // db.query(`
+  // SELECT id, userName, firstName, lastName, email, password FROM ${table} WHERE email=?
+  // `, [email], cb)
+  return execPromise(
+    `
+    SELECT id, userName, firstName, lastName, email, password FROM ${table} WHERE email=?
+  `,
+    [email]
+  )
 }
 
 exports.getUser = (cb) => {
@@ -42,10 +50,10 @@ exports.updateUser2 = (data, cb) => {
   `, [data.userName, data.firstName, data.lastName, data.email, data.phoneNumber, data.address, data.picture, data.id], cb)
 }
 
-exports.getUserRole = (id, cb) => {
-  db.query(`
+exports.getUserRole = (id) => {
+  return execPromise(`
   SELECT role FROM user WHERE id=?
-  `, [id], cb)
+  `, [id])
 }
 
 exports.updateUserPartial = (data, cb) => {

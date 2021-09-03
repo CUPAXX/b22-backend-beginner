@@ -1,4 +1,6 @@
 const db = require('../helpers/db')
+const { promisify } = require('util')
+const execPromise = promisify(db.query).bind(db)
 
 exports.createItem = (data, cb) => {
   db.query(`INSERT INTO item (productName, price, deliveryCondition, description, stock, picture) 
@@ -46,29 +48,29 @@ exports.deleteItem = (id, cb) => {
 //   `, [cond.limit, cond.offset], cb)
 // }
 
-exports.getItemByCondition = (cond, cb) => {
+exports.getItemByCondition = (cond) => {
   const orderBy = Object.keys(cond.sort)[0]
   const sort = cond.sort[orderBy]
-  db.query(`
+  return execPromise(`
   SELECT item.id, item.productName, item.picture, item.price, item.deliveryCondition, item.description, item.stock, item.createAt, item.updatedAt 
   FROM item
   WHERE item.productName LIKE '%${cond.search}%' 
   ORDER BY item.${orderBy} ${sort} 
   LIMIT ? OFFSET ?
-  `, [cond.limit, cond.offset], cb)
+  `, [cond.limit, cond.offset])
 }
 
-exports.getItemByConditionSec = (cb) => {
-  db.query(`
+exports.getItemByConditionSec = () => {
+  return execPromise(`
   SELECT item.id, item.productName, item.picture, item.price, item.deliveryCondition, item.description, item.stock, item.createAt, item.updatedAt 
   FROM item
-  `, cb)
+  `)
 }
-exports.getItemCount = (cond, cb) => {
-  db.query(`
+exports.getItemCount = (cond) => {
+  return execPromise(`
   SELECT COUNT (item.id) as count FROM item 
   WHERE item.productName LIKE '%${cond.search}%'
-  `, cb)
+  `)
 }
 
 // exports.getItemCount = (cond, cb) => {
