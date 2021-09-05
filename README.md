@@ -2,7 +2,7 @@
 
 Backend Server for <a href="https://github.com/CUPAXX/b22-frontend-coffeshop">Coffeshop Web App</a>
 
-#background_projek. [More about Express](https://en.wikipedia.org/wiki/Express.js)
+[More about Express](https://en.wikipedia.org/wiki/Express.js)
 
 
 ## Built With
@@ -41,6 +41,7 @@ Backend Server for <a href="https://github.com/CUPAXX/b22-frontend-coffeshop">Co
 <li>Transaction</li>
 <li>Add to Cart</li>
 <li>History Transaction</li>
+<li>chat</li>
 </ul>
 
 

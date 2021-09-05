@@ -6,160 +6,148 @@ const { APP_URL } = process.env
 const { validationResult } = require('express-validator')
 const { getUserRole } = require('../models/user')
 
-exports.createItem = (req, res) => {
+exports.createItem = async (req, res) => {
   const result = validationResult(req)
   if (!result.isEmpty()) {
     return response(res, 400, false, result.errors[0].msg)
   }
-  getUserRole(req.authUser.id, (err, results) => {
-    if (err) {
-      return response(res, 500, false, 'Something Wrong')
-    }
-    if (results[0].role === 'Admin') {
-      req.body.picture = req.file ? `${process.env.APP_UPLOAD_ROUTE}/${req.file.filename}` : null
-      itemModel.createItem(req.body, (err, results) => {
-        if (!err) {
-          if (typeof req.body.category !== 'object') {
-            req.body.category = [req.body.category]
-          }
-          if (typeof req.body.variants !== 'object') {
-            req.body.variants = [req.body.variants]
-          }
-          req.body.category.forEach(idCategory => {
-            const data = {
-              id_product: results.insertId,
-              id_category: idCategory
-            }
-            createProductCategory(data, () => {
-              console.log(`product ${results.insertId} added to category ${idCategory}`)
-            })
-          })
-          req.body.variants.forEach(idVariants => {
-            const data = {
-              id_product: results.insertId,
-              id_variants: idVariants
-            }
-            createProductVariants(data, () => {
-              console.log(`product ${results.insertId} added to variants ${idVariants}`)
-            })
-          })
-          if (results.affectedRows > 0) {
-            return response(res, 200, true, 'Item Has Been Successfully Created', results)
-          } else {
-            return response(res, 500, false, `Error: ${err.sqlMessage}`)
-          }
-        } else {
-          return standardRes(res, 500, false, 'An Error Occurred')
+  const user = await getUserRole(req.authUser.id)
+  if (user[0].role === 'Admin') {
+    req.body.picture = req.file ? `${process.env.APP_UPLOAD_ROUTE}/${req.file.filename}` : null
+    itemModel.createItem(req.body, (err, results) => {
+      if (!err) {
+        if (typeof req.body.category !== 'object') {
+          req.body.category = [req.body.category]
         }
-      })
-    } else {
-      return response(res, 500, false, 'You are not admin can\'t do this action')
-    }
-  })
+        if (typeof req.body.variants !== 'object') {
+          req.body.variants = [req.body.variants]
+        }
+        req.body.category.forEach(idCategory => {
+          const data = {
+            id_product: results.insertId,
+            id_category: idCategory
+          }
+          createProductCategory(data, () => {
+            console.log(`product ${results.insertId} added to category ${idCategory}`)
+          })
+        })
+        req.body.variants.forEach(idVariants => {
+          const data = {
+            id_product: results.insertId,
+            id_variants: idVariants
+          }
+          createProductVariants(data, () => {
+            console.log(`product ${results.insertId} added to variants ${idVariants}`)
+          })
+        })
+        if (results.affectedRows > 0) {
+          return response(res, 200, true, 'Item Has Been Successfully Created', results)
+        } else {
+          return response(res, 500, false, `Error: ${err.sqlMessage}`)
+        }
+      } else {
+        return standardRes(res, 500, false, 'An Error Occurred')
+      }
+    })
+  } else {
+    return response(res, 500, false, 'You are not admin can\'t do this action')
+  }
 }
 
-exports.updateItemPartially = (req, res) => {
-  getUserRole(req.authUser.id, (err, results) => {
-    if (err) {
-      return response(res, 500, false, 'Something Wrong')
-    }
-    if (results[0].role === 'Admin') {
-      const { id: stringId } = req.params
-      const id = parseInt(stringId)
+exports.updateItemPartially = async (req, res) => {
+  const user = await getUserRole(req.authUser.id)
+  if (user[0].role === 'Admin') {
+    const { id: stringId } = req.params
+    const id = parseInt(stringId)
 
-      itemModel.getItemById(id, (err, results, _fields) => {
-        if (!err) {
-          if (results.length > 0) {
-            req.body.picture = req.file ? `${process.env.APP_UPLOAD_ROUTE}/${req.file.filename}` : null
-            const key = Object.keys(req.body)
-            if (key.length > 1) {
-              return standardRes(res, 400, false, 'System Only Need 1 Column')
+    itemModel.getItemById(id, (err, results, _fields) => {
+      if (!err) {
+        if (results.length > 0) {
+          // req.body.picture = req.file ? `${process.env.APP_UPLOAD_ROUTE}/${req.file.filename}` : null
+          // if (req.body.picture !== null) {
+          //   console.log('1')
+          // }
+          const key = Object.keys(req.body)
+          console.log(key.length)
+          if (key.length > 1) {
+            return standardRes(res, 400, false, 'System Only Need 1 Column')
+          } else {
+            const firstColumn = key[0]
+            const updateData = { id, [firstColumn]: req.body[firstColumn] }
+            itemModel.updateItemPartial(updateData, (err, results, _fields) => {
+              if (!err) {
+                return standardRes(res, 200, true, 'Update Success', results)
+              } else {
+                return standardRes(res, 500, false, 'An Error Occurred')
+              }
+            })
+          }
+        } else {
+          return standardRes(res, 400, false, 'Item Not Found')
+        }
+      } else {
+        return standardRes(res, 500, false, 'An Error Occurred')
+      }
+    })
+  }
+}
+
+exports.updateItem = async (req, res) => {
+  const result = validationResult(req)
+  if (!result.isEmpty()) {
+    return response(res, 400, false, result.errors[0].msg)
+  }
+  const user = await getUserRole(req.authUser.id)
+  if (user[0].role === 'Admin') {
+    const { id } = req.params
+    itemModel.getItemById(id, (err, results, _fields) => {
+      if (!err) {
+        if (results.length > 0) {
+          req.body.picture = req.file ? `${process.env.APP_UPLOAD_ROUTE}/${req.file.filename}` : null
+          const { name, price, deliveryCondition, description, stock, picture } = req.body
+          const updateData = { id, name, price, deliveryCondition, description, stock, picture }
+          itemModel.updateItem(updateData, (err, results, _fields) => {
+            if (!err) {
+              return standardRes(res, 200, true, 'Update SuccessFully', results)
             } else {
-              const firstColumn = key[0]
-              const updateData = { id, [firstColumn]: req.body[firstColumn] }
-              itemModel.updateItemPartial(updateData, (err, results, _fields) => {
-                if (!err) {
-                  return standardRes(res, 200, true, 'Update Success', results)
-                } else {
-                  return standardRes(res, 500, false, 'An Error Occurred')
-                }
-              })
+              return standardRes(res, 500, false, 'An Error Occurred')
             }
-          } else {
-            return standardRes(res, 400, false, 'Item Not Found')
-          }
+          })
         } else {
-          return standardRes(res, 500, false, 'An Error Occurred')
+          return standardRes(res, 400, false, 'Item Not Found')
         }
-      })
-    }
-  })
-}
-
-exports.updateItem = (req, res) => {
-  const result = validationResult(req)
-  if (!result.isEmpty()) {
-    return response(res, 400, false, result.errors[0].msg)
+      } else {
+        return standardRes(res, 500, false, 'An Error Occurred')
+      }
+    })
   }
-  getUserRole(req.authUser.id, (err, results) => {
-    if (err) {
-      return response(res, 500, false, 'Something Wrong')
-    }
-    if (results[0].role === 'Admin') {
-      const { id } = req.params
-      itemModel.getItemById(id, (err, results, _fields) => {
-        if (!err) {
-          if (results.length > 0) {
-            req.body.picture = req.file ? `${process.env.APP_UPLOAD_ROUTE}/${req.file.filename}` : null
-            const { name, price, deliveryCondition, description, stock, picture } = req.body
-            const updateData = { id, name, price, deliveryCondition, description, stock, picture }
-            itemModel.updateItem(updateData, (err, results, _fields) => {
-              if (!err) {
-                return standardRes(res, 200, true, 'Update SuccessFully', results)
-              } else {
-                return standardRes(res, 500, false, 'An Error Occurred')
-              }
-            })
-          } else {
-            return standardRes(res, 400, false, 'Item Not Found')
-          }
-        } else {
-          return standardRes(res, 500, false, 'An Error Occurred')
-        }
-      })
-    }
-  })
 }
 
-exports.deleteItem = (req, res) => {
-  getUserRole(req.authUser.id, (err, results) => {
-    if (err) {
-      return response(res, 500, false, 'Something Wrong')
-    }
-    if (results[0].role === 'Admin') {
-      const { id: stringId } = req.params
-      const id = parseInt(stringId)
-      itemModel.getItemById(id, (err, results, _fields) => {
-        if (!err) {
-          if (results.length > 0) {
-            itemModel.deleteItem(id, (err, results, _fields) => {
-              if (!err) {
-                return standardRes(res, 200, true, 'Item Has Been Delete', results)
-              } else {
-                return standardRes(res, 500, false, 'An Error Occurred')
-              }
-            })
-          } else {
-            return standardRes(res, 400, false, 'Item Not Found')
-          }
+exports.deleteItem = async (req, res) => {
+  const user = await getUserRole(req.authUser.id)
+  if (user[0].role === 'Admin') {
+    const { id: stringId } = req.params
+    const id = parseInt(stringId)
+    itemModel.getItemById(id, (err, results, _fields) => {
+      if (!err) {
+        if (results.length > 0) {
+          itemModel.deleteItem(id, (err, results, _fields) => {
+            if (!err) {
+              return standardRes(res, 200, true, 'Item Has Been Delete', results)
+            } else {
+              return standardRes(res, 500, false, 'An Error Occurred')
+            }
+          })
         } else {
-          return standardRes(res, 500, false, 'An Error Occurred')
+          return standardRes(res, 400, false, 'Item Not Found')
         }
-      })
-    } else {
-      return response(res, 500, false, 'You are not admin can\'t do this action')
-    }
-  })
+      } else {
+        return standardRes(res, 500, false, 'An Error Occurred')
+      }
+    })
+  } else {
+    return response(res, 500, false, 'You are not admin can\'t do this action')
+  }
 }
 
 exports.getDetailItem = (req, res) => {
