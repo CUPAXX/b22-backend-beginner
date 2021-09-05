@@ -1,6 +1,7 @@
 <h1 align="center">Backend - Coffeshop RESTfull API</h1>
 
-Backend Server for <a href="https://github.com/CUPAXX/b22-frontend-coffeshop">Coffeshop Web App</a>
+Web application for ordering food and drinks,
+this application is made using ReactJs as a framework and Tailwind CSS as styling
 
 [More about Express](https://en.wikipedia.org/wiki/Express.js)
 
