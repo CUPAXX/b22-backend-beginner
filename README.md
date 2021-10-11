@@ -1,7 +1,7 @@
 <h1 align="center">Backend - Coffeshop RESTfull API</h1>
 
 Web application for ordering food and drinks,
-this application is made using ReactJs as a framework and Tailwind CSS as styling
+this application is made using Express JS & Node JS
 
 [More about Express](https://en.wikipedia.org/wiki/Express.js)
 
@@ -26,7 +26,7 @@ this application is made using ReactJs as a framework and Tailwind CSS as stylin
 2. Type `npm install`
 3. Make new file a called **.env**, set up first [here](#set-up-env-file)
 4. Turn on Web Server and MySQL can using Third-party tool like xampp, etc.
-5. Create a database with the name #nama_database, and Import file sql to **phpmyadmin**
+5. Create a database with the name #cofeeshop, and Import file sql to **phpmyadmin**
 6. Open Postman desktop application or Chrome web app extension that has installed before
 7. Choose HTTP Method and enter request url.(ex. localhost:3000/)
 8. You can see all the end point [here](https://documenter.getpostman.com/view/15940810/TzscomKH)
@@ -67,4 +67,4 @@ DB_DATABASE = coffeeshop //db name
 
 
 ## License
-© [M Fiqry Arahmansyah](https://github.com/CUPAXX)
+© [M Fiqry Arahmansyah](https://www.instagram.com/xfiqryx)
