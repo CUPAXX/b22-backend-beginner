@@ -26,10 +26,10 @@ exports.getUser = (cb) => {
   db.query('SELECT id, picture, userName, firstName, lastName, email, createAt, updatedAt FROM user', cb)
 }
 
-exports.getUserById = (id, cb) => {
-  db.query(`
+exports.getUserById = (id) => {
+  return execPromise(`
   SELECT id, picture, userName, firstName, lastName, email, address, phoneNumber FROM user WHERE id=?
-  `, [id], cb)
+  `, [id])
 }
 
 // exports.deleteUser = (id, cb) => {

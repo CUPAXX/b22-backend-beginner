@@ -86,14 +86,3 @@ exports.getCategoryItem = async (req, res) => {
     return standardRes(res, 400, false, 'category Not Found')
   }
 }
-
-// getUserRole(req.authUser.id, (err, results) => {
-//   if (err) {
-//     return response(res, 500, false, 'Something Wrong')
-//   }
-//   if (results[0].role === 'Admin') {
-
-//   } else {
-//     return response(res, 500, false, 'You are not admin can\'t do this action')
-//   }
-// })

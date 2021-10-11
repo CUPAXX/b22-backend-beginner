@@ -137,7 +137,7 @@ describe('Update Category Testing ', () => {
        id: 36
      },
      params: {
-       id: 20
+       id: 85
      }
     }
     const mockingResponse = () => {
@@ -217,32 +217,32 @@ describe('Update Category Testing ', () => {
 })
 
 describe('delete Category Testing ', () => {
-  // it(`delete Category success`, (done) => {
-  //   let req = {
-  //     body: {},
-  //     authUser: {
-  //       id: 36
-  //     },
-  //     params: {
-  //       id: 39
-  //     }
-  //   }
-  //   const mockingResponse = () => {
-  //     const res = {}
-  //     res.status = sinon.stub().returns(res)
-  //     res.json = sinon.stub().returns(res)
-  //     return res
-  //   }
-  //   const res = mockingResponse()
-  //   deleteCategory(req, res).then((data) => {
-  //     expect(data.json.args[0][0].success).to.be.true
-  //     expect(data.json.args[0][0].message).equal('Category has been Delete')
-  //     expect(data.status.args[0][0]).equal(200)
-  //   }).catch((err) => {
-  //     console.log(err)
-  //   })
-  //   done()
-  // })
+  it(`delete Category success`, (done) => {
+    let req = {
+      body: {},
+      authUser: {
+        id: 36
+      },
+      params: {
+        id: 101
+      }
+    }
+    const mockingResponse = () => {
+      const res = {}
+      res.status = sinon.stub().returns(res)
+      res.json = sinon.stub().returns(res)
+      return res
+    }
+    const res = mockingResponse()
+    deleteCategory(req, res).then((data) => {
+      expect(data.json.args[0][0].success).to.be.true
+      expect(data.json.args[0][0].message).equal('Category has been Delete')
+      expect(data.status.args[0][0]).equal(200)
+    }).catch((err) => {
+      console.log(err)
+    })
+    done()
+  })
 
   it(`delete Category failed`, (done) => {
     let req = {

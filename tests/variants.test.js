@@ -178,32 +178,32 @@ describe('update Variants Testing ', () => {
 })
 
 describe('delete Variants Testing ', () => {
-  // it(`delete Variants success`, (done) => {
-  //   let req = {
-  //     body: {},
-  //     authUser: {
-  //       id: 36
-  //     },
-  //     params: {
-  //       id: 30
-  //     }
-  //   }
-  //   const mockingResponse = () => {
-  //     const res = {}
-  //     res.status = sinon.stub().returns(res)
-  //     res.json = sinon.stub().returns(res)
-  //     return res
-  //   }
-  //   const res = mockingResponse()
-  //   deleteVariants(req, res).then((data) => {
-  //     expect(data.json.args[0][0].success).to.be.true
-  //     expect(data.json.args[0][0].message).equal('variants delete success')
-  //     expect(data.status.args[0][0]).equal(200)
-  //   }).catch((err) => {
-  //     console.log(err)
-  //   })
-  //   done()
-  // })
+  it(`delete Variants success`, (done) => {
+    let req = {
+      body: {},
+      authUser: {
+        id: 36
+      },
+      params: {
+        id: 40
+      }
+    }
+    const mockingResponse = () => {
+      const res = {}
+      res.status = sinon.stub().returns(res)
+      res.json = sinon.stub().returns(res)
+      return res
+    }
+    const res = mockingResponse()
+    deleteVariants(req, res).then((data) => {
+      expect(data.json.args[0][0].success).to.be.true
+      expect(data.json.args[0][0].message).equal('variants delete success')
+      expect(data.status.args[0][0]).equal(200)
+    }).catch((err) => {
+      console.log(err)
+    })
+    done()
+  })
 
   it(`delete Variants failed`, (done) => {
     let req = {
@@ -239,7 +239,7 @@ describe('delete Variants Testing ', () => {
         id: 37
       },
       params: {
-        id: 3999
+        id: 1
       }
     }
     const mockingResponse = () => {

@@ -3,26 +3,21 @@ const { response } = require('../helpers/standardRes')
 const bcrypt = require('bcrypt')
 const { APP_URL } = process.env
 
-exports.getUser = (req, res) => {
-  getUserById(req.authUser.id, (err, results, _fields) => {
-    if (!err) {
-      const data = {
-        id: '',
-        userName: '',
-        lastName: '',
-        firstName: '',
-        picture: '',
-        email: '',
-        address: '',
-        ...results[0]
-      }
-      const pic = data
-      pic.picture = `${APP_URL}${pic.picture}`
-      return response(res, 200, true, 'current user', data)
-    } else {
-      return response(res, 500, false, 'An error Occurred')
-    }
-  })
+exports.getUser = async (req, res) => {
+  const results = await getUserById(req.authUser.id)
+  const data = {
+    id: '',
+    userName: '',
+    lastName: '',
+    firstName: '',
+    picture: '',
+    email: '',
+    address: '',
+    ...results[0]
+  }
+  const pic = data
+  pic.picture = `${APP_URL}${pic.picture}`
+  return response(res, 200, true, 'current user', data)
 }
 
 exports.updateUser = (req, res) => {

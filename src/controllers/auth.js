@@ -5,10 +5,10 @@ const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 
 exports.register = async (req, res) => {
-  // const result = validationResult(req)
-  // if (!result.isEmpty()) {
-  //   return response(res, 400, false, result.errors[0].msg)
-  // }
+  const result = validationResult(req)
+  if (!result.isEmpty()) {
+    return response(res, 400, false, result.errors[0].msg)
+  }
   const email = req.body.email
   const password = req.body.password
   const resPassword = await bcrypt.hash(password, await bcrypt.genSalt())
