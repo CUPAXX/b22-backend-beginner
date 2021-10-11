@@ -16,7 +16,7 @@ exports.getUserByEmail = (email) => {
   // `, [email], cb)
   return execPromise(
     `
-    SELECT id, userName, firstName, lastName, email, password FROM ${table} WHERE email=?
+    SELECT * FROM ${table} WHERE email=?
   `,
     [email]
   )
