@@ -5,12 +5,10 @@ this application is made using Express JS & Node JS
 
 [More about Express](https://en.wikipedia.org/wiki/Express.js)
 
-
 ## Built With
 
 [![Express.js](https://img.shields.io/badge/Express.js-4.x-orange.svg?style=rounded-square)](https://expressjs.com/en/starter/installing.html)
 [![Node.js](https://img.shields.io/badge/Node.js-v.12.13-green.svg?style=rounded-square)](https://nodejs.org/)
-
 
 ## Requirements
 
@@ -19,7 +17,6 @@ this application is made using Express JS & Node JS
 3. <a href="https://www.getpostman.com/">Postman</a>
 4. Web Server (ex. xampp)
 
-
 ## How to run the app ?
 
 1. Open app's directory in CMD or Terminal
@@ -27,12 +24,12 @@ this application is made using Express JS & Node JS
 3. Make new file a called **.env**, set up first [here](#set-up-env-file)
 4. Turn on Web Server and MySQL can using Third-party tool like xampp, etc.
 5. Create a database with the name #cofeeshop, and Import file sql to **phpmyadmin**
-6. Open Postman desktop application or Chrome web app extension that has installed before
-7. Choose HTTP Method and enter request url.(ex. localhost:3000/)
+6. type `npm install -g nodemon` to install nodemon
+7. type `nodemon` to run the server
 8. You can see all the end point [here](https://documenter.getpostman.com/view/15940810/TzscomKH)
 
-
 # Feature
+
 <ul>
 <li>Login & Register</li>
 <li>Get User</li>
@@ -44,7 +41,6 @@ this application is made using Express JS & Node JS
 <li>History Transaction</li>
 <li>chat</li>
 </ul>
-
 
 ## Set up .env file
 
@@ -59,12 +55,12 @@ APP_UPLOAD_ROUTE=/upload // route upload file
 APP_UPLOAD_PATH=assets/images //route upload path
 APP_TRANSACTION_PREFIX=CS //transaction code prefix
 
-DB_HOST = localhost // db host
-DB_USER = root // db user
-DB_PASSWORD =  //db password
-DB_DATABASE = coffeeshop //db name
+DB_HOST = localhost
+DB_USER = root
+DB_PASSWORD =
+DB_DATABASE = coffeeshop
 ```
 
-
 ## License
+
 © [M Fiqry Arahmansyah](https://www.instagram.com/xfiqryx)
