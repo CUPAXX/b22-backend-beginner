@@ -52,7 +52,6 @@ NODE_ENV = development
 APP_URL=http://localhost:8080 //app url access
 APP_KEY=MyBackend //key access
 APP_UPLOAD_ROUTE=/upload // route upload file
-APP_UPLOAD_PATH=assets/images //route upload path
 APP_TRANSACTION_PREFIX=CS //transaction code prefix
 
 DB_HOST = localhost
