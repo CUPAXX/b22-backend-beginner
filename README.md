@@ -46,7 +46,7 @@ this application is made using Express JS & Node JS
 
 Open .env file on your favorite code editor, and copy paste this code below :
 
-```
+```js
 NODE_ENV = development
 
 APP_URL=http://localhost:8080 //app url access
